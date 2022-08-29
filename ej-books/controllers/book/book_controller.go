@@ -3,9 +3,9 @@ package book
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo/dtos"
-	service "github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo/services"
-	"github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo/utils/cache"
+	"github.com/emikohmann/ucc-arqsoft-2/ej-books/dtos"
+	service "github.com/emikohmann/ucc-arqsoft-2/ej-books/services"
+	"github.com/emikohmann/ucc-arqsoft-2/ej-books/utils/cache"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

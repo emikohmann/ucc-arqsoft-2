@@ -1,10 +1,10 @@
 package services
 
 import (
-	bookDao "github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo/daos/book"
-	"github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo/dtos"
-	model "github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo/models"
-	e "github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo/utils/errors"
+	bookDao "github.com/emikohmann/ucc-arqsoft-2/ej-books/daos/book"
+	"github.com/emikohmann/ucc-arqsoft-2/ej-books/dtos"
+	model "github.com/emikohmann/ucc-arqsoft-2/ej-books/models"
+	e "github.com/emikohmann/ucc-arqsoft-2/ej-books/utils/errors"
 )
 
 type bookService struct{}

@@ -3,8 +3,8 @@ package book
 import (
 	"context"
 	"fmt"
-	model "github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo/models"
-	"github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo/utils/db"
+	model "github.com/emikohmann/ucc-arqsoft-2/ej-books/models"
+	"github.com/emikohmann/ucc-arqsoft-2/ej-books/utils/db"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo/router"
-	"github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo/utils/cache"
-	"github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo/utils/db"
+	"github.com/emikohmann/ucc-arqsoft-2/ej-books/router"
+	"github.com/emikohmann/ucc-arqsoft-2/ej-books/utils/cache"
+	"github.com/emikohmann/ucc-arqsoft-2/ej-books/utils/db"
 	"github.com/gin-gonic/gin"
 
 	"fmt"

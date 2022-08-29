@@ -2,7 +2,7 @@ package router
 
 import (
 	"fmt"
-	bookController "github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo/controllers/book"
+	bookController "github.com/emikohmann/ucc-arqsoft-2/ej-books/controllers/book"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,4 +1,4 @@
-module github.com/emikohmann/ucc-arqsoft-2/ej-memcached-mongo
+module github.com/emikohmann/ucc-arqsoft-2/ej-books
 
 go 1.17
 
