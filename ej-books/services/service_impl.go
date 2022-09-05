@@ -4,6 +4,7 @@ import (
 	"github.com/emikohmann/ucc-arqsoft-2/ej-books/dtos"
 	"github.com/emikohmann/ucc-arqsoft-2/ej-books/services/repositories"
 	e "github.com/emikohmann/ucc-arqsoft-2/ej-books/utils/errors"
+	"net/http"
 )
 
 type ServiceImpl struct {
@@ -16,20 +17,38 @@ func NewServiceImpl(
 	cache repositories.RepositoryCache,
 	memcached repositories.RepositoryMemcached,
 	mongo repositories.RepositoryMongo,
-) ServiceImpl {
-	return ServiceImpl{
+) *ServiceImpl {
+	return &ServiceImpl{
 		cache:     cache,
 		memcached: memcached,
 		mongo:     mongo,
 	}
 }
 
-func (ServiceImpl) Get(id string) (dtos.BookDto, e.ApiError) {
-	//TODO implement me
-	panic("implement me")
+func (serv *ServiceImpl) Get(id string) (dtos.BookDto, e.ApiError) {
+	var book dtos.BookDto
+	var apiErr e.ApiError
+
+	book, apiErr = serv.cache.Get(id)
+	if apiErr != nil {
+		if apiErr.Status() != http.StatusNotFound {
+			return dtos.BookDto{}, apiErr
+		}
+		book, apiErr = serv.memcached.Get(id)
+		if apiErr != nil {
+			if apiErr.Status() != http.StatusNotFound {
+				return dtos.BookDto{}, apiErr
+			}
+			book, apiErr = serv.mongo.Get(id)
+			if apiErr != nil {
+				return dtos.BookDto{}, apiErr
+			}
+		}
+	}
+	return book, nil
 }
 
-func (ServiceImpl) Insert(book dtos.BookDto) (dtos.BookDto, e.ApiError) {
+func (serv *ServiceImpl) Insert(book dtos.BookDto) (dtos.BookDto, e.ApiError) {
 	//TODO implement me
 	panic("implement me")
 }
