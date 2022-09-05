@@ -57,7 +57,7 @@ func (repo *RepositoryMongo) Get(id string) (dtos.BookDTO, e.ApiError) {
 		return dtos.BookDTO{}, e.NewInternalServerApiError(fmt.Sprintf("error getting book %s", id), err)
 	}
 	return dtos.BookDTO{
-		Id:   book.Id.Hex(),
+		Id:   id,
 		Name: book.Name,
 	}, nil
 }
