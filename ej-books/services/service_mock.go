@@ -12,11 +12,15 @@ func NewServiceMock() ServiceMock {
 }
 
 func (ServiceMock) Get(id string) (dtos.BookDTO, e.ApiError) {
-	//TODO implement me
-	panic("implement me")
+	return dtos.BookDTO{
+		Id:   "12345",
+		Name: "Mocked book",
+	}, nil
 }
 
 func (ServiceMock) Insert(book dtos.BookDTO) (dtos.BookDTO, e.ApiError) {
-	//TODO implement me
-	panic("implement me")
+	return dtos.BookDTO{
+		Id:   "12345",
+		Name: book.Name,
+	}, nil
 }

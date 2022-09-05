@@ -7,16 +7,22 @@ import (
 	"github.com/emikohmann/ucc-arqsoft-2/ej-books/utils/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 )
 
 var (
 	bookService = service.NewServiceImpl(
 
-		repositories.NewRepositoryCache(),
+		repositories.NewRepositoryCache(
+			1000,
+			100,
+			30*time.Second,
+		),
 
 		repositories.NewRepositoryMemcached(
 			"localhost",
-			11211),
+			11211,
+		),
 
 		repositories.NewRepositoryMongo(
 			"root",
@@ -24,7 +30,8 @@ var (
 			"localhost",
 			27017,
 			"admin",
-			"SCRAM-SHA-256"),
+			"SCRAM-SHA-256",
+		),
 	)
 )
 
