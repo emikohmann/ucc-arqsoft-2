@@ -4,7 +4,7 @@ import (
 	"github.com/emikohmann/ucc-arqsoft-2/ej-books/dtos"
 	service "github.com/emikohmann/ucc-arqsoft-2/ej-books/services"
 	"github.com/emikohmann/ucc-arqsoft-2/ej-books/services/repositories"
-	"github.com/emikohmann/ucc-arqsoft-2/ej-books/utils/errors"
+	e "github.com/emikohmann/ucc-arqsoft-2/ej-books/utils/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -12,26 +12,9 @@ import (
 
 var (
 	bookService = service.NewServiceImpl(
-
-		repositories.NewRepositoryCache(
-			1000,
-			100,
-			30*time.Second,
-		),
-
-		repositories.NewRepositoryMemcached(
-			"localhost",
-			11211,
-		),
-
-		repositories.NewRepositoryMongo(
-			"root",
-			"root",
-			"localhost",
-			27017,
-			"admin",
-			"SCRAM-SHA-256",
-		),
+		repositories.NewRepositoryCache(1000, 100, 30*time.Second),
+		repositories.NewRepositoryMemcached("localhost", 11211),
+		repositories.NewRepositoryMongo("localhost", 27017, "books"),
 	)
 )
 
@@ -47,7 +30,7 @@ func Get(c *gin.Context) {
 func Insert(c *gin.Context) {
 	var book dtos.BookDTO
 	if err := c.BindJSON(&book); err != nil {
-		apiErr := errors.NewBadRequestApiError(err.Error())
+		apiErr := e.NewBadRequestApiError(err.Error())
 		c.JSON(apiErr.Status(), apiErr)
 		return
 	}

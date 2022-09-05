@@ -39,7 +39,7 @@ func (serv *ServiceImpl) Get(id string) (dtos.BookDTO, e.ApiError) {
 		}
 		defer func() {
 			if apiErr != nil {
-				if apiErr := serv.cache.Insert(book); apiErr != nil {
+				if _, apiErr := serv.cache.Insert(book); apiErr != nil {
 					fmt.Println(fmt.Sprintf("Error trying to save book in cache %v", apiErr))
 				}
 			}
@@ -50,13 +50,6 @@ func (serv *ServiceImpl) Get(id string) (dtos.BookDTO, e.ApiError) {
 			if apiErr.Status() != http.StatusNotFound {
 				return dtos.BookDTO{}, apiErr
 			}
-			defer func() {
-				if apiErr != nil {
-					if apiErr := serv.memcached.Insert(book); apiErr != nil {
-						fmt.Println(fmt.Sprintf("Error trying to save book in memcached %v", apiErr))
-					}
-				}
-			}()
 			// try to find it in mongo
 			book, apiErr = serv.mongo.Get(id)
 			if apiErr != nil {
@@ -69,9 +62,22 @@ func (serv *ServiceImpl) Get(id string) (dtos.BookDTO, e.ApiError) {
 				}
 			} else {
 				source = "mongo"
+				defer func() {
+					if _, apiErr := serv.memcached.Insert(book); apiErr != nil {
+						fmt.Println(fmt.Sprintf("Error trying to save book in memcached %v", apiErr))
+					}
+					if _, apiErr := serv.cache.Insert(book); apiErr != nil {
+						fmt.Println(fmt.Sprintf("Error trying to save book in cache %v", apiErr))
+					}
+				}()
 			}
 		} else {
 			source = "memcached"
+			defer func() {
+				if _, apiErr := serv.cache.Insert(book); apiErr != nil {
+					fmt.Println(fmt.Sprintf("Error trying to save book in cache %v", apiErr))
+				}
+			}()
 		}
 	} else {
 		source = "cache"
@@ -82,20 +88,26 @@ func (serv *ServiceImpl) Get(id string) (dtos.BookDTO, e.ApiError) {
 }
 
 func (serv *ServiceImpl) Insert(book dtos.BookDTO) (dtos.BookDTO, e.ApiError) {
-	if apiErr := serv.mongo.Insert(book); apiErr != nil {
+	result, apiErr := serv.mongo.Insert(book)
+	if apiErr != nil {
 		fmt.Println(fmt.Sprintf("Error inserting book in mongo: %v", apiErr))
 		return dtos.BookDTO{}, apiErr
 	}
+	fmt.Println(fmt.Sprintf("Inserted book in mongo: %v", result))
 
-	if apiErr := serv.memcached.Insert(book); apiErr != nil {
+	_, apiErr = serv.memcached.Insert(result)
+	if apiErr != nil {
 		fmt.Println(fmt.Sprintf("Error inserting book in memcached: %v", apiErr))
-		return dtos.BookDTO{}, nil
+		return result, nil
 	}
+	fmt.Println(fmt.Sprintf("Inserted book in memcached: %v", result))
 
-	if apiErr := serv.cache.Insert(book); apiErr != nil {
+	_, apiErr = serv.cache.Insert(result)
+	if apiErr != nil {
 		fmt.Println(fmt.Sprintf("Error inserting book in cache: %v", apiErr))
-		return dtos.BookDTO{}, nil
+		return result, nil
 	}
+	fmt.Println(fmt.Sprintf("Inserted book in cache: %v", result))
 
-	return book, nil
+	return result, nil
 }
