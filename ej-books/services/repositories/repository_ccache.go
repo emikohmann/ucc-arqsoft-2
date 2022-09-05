@@ -8,21 +8,21 @@ import (
 	"time"
 )
 
-type RepositoryCache struct {
+type RepositoryCCache struct {
 	Client     *ccache.Cache
 	DefaultTTL time.Duration
 }
 
-func NewRepositoryCache(maxSize int64, itemsToPrune uint32, defaultTTL time.Duration) *RepositoryCache {
+func NewCCache(maxSize int64, itemsToPrune uint32, defaultTTL time.Duration) *RepositoryCCache {
 	client := ccache.New(ccache.Configure().MaxSize(maxSize).ItemsToPrune(itemsToPrune))
-	fmt.Println("[Cache] Initialized cache")
-	return &RepositoryCache{
+	fmt.Println("[CCache] Initialized")
+	return &RepositoryCCache{
 		Client:     client,
 		DefaultTTL: defaultTTL,
 	}
 }
 
-func (repo *RepositoryCache) Get(id string) (dtos.BookDTO, e.ApiError) {
+func (repo *RepositoryCCache) Get(id string) (dtos.BookDTO, e.ApiError) {
 	item := repo.Client.Get(id)
 	if item == nil {
 		return dtos.BookDTO{}, e.NewNotFoundApiError(fmt.Sprintf("book %s not found", id))
@@ -33,17 +33,17 @@ func (repo *RepositoryCache) Get(id string) (dtos.BookDTO, e.ApiError) {
 	return item.Value().(dtos.BookDTO), nil
 }
 
-func (repo *RepositoryCache) Insert(book dtos.BookDTO) (dtos.BookDTO, e.ApiError) {
+func (repo *RepositoryCCache) Insert(book dtos.BookDTO) (dtos.BookDTO, e.ApiError) {
 	repo.Client.Set(book.Id, book, repo.DefaultTTL)
 	return book, nil
 }
 
-func (repo *RepositoryCache) Update(book dtos.BookDTO) (dtos.BookDTO, e.ApiError) {
+func (repo *RepositoryCCache) Update(book dtos.BookDTO) (dtos.BookDTO, e.ApiError) {
 	repo.Client.Set(book.Id, book, repo.DefaultTTL)
 	return book, nil
 }
 
-func (repo *RepositoryCache) Delete(id string) e.ApiError {
+func (repo *RepositoryCCache) Delete(id string) e.ApiError {
 	repo.Client.Delete(id)
 	return nil
 }

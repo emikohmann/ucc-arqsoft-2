@@ -1,25 +1,25 @@
-package book
+package controllers
 
 import (
 	"github.com/emikohmann/ucc-arqsoft-2/ej-books/dtos"
 	service "github.com/emikohmann/ucc-arqsoft-2/ej-books/services"
-	"github.com/emikohmann/ucc-arqsoft-2/ej-books/services/repositories"
 	e "github.com/emikohmann/ucc-arqsoft-2/ej-books/utils/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"time"
 )
 
-var (
-	bookService = service.NewServiceImpl(
-		repositories.NewRepositoryCache(1000, 100, 30*time.Second),
-		repositories.NewRepositoryMemcached("localhost", 11211),
-		repositories.NewRepositoryMongo("localhost", 27017, "books"),
-	)
-)
+type Controller struct {
+	service service.Service
+}
 
-func Get(c *gin.Context) {
-	book, apiErr := bookService.Get(c.Param("id"))
+func NewController(service service.Service) *Controller {
+	return &Controller{
+		service: service,
+	}
+}
+
+func (ctrl *Controller) Get(c *gin.Context) {
+	book, apiErr := ctrl.service.Get(c.Param("id"))
 	if apiErr != nil {
 		c.JSON(apiErr.Status(), apiErr)
 		return
@@ -27,7 +27,7 @@ func Get(c *gin.Context) {
 	c.JSON(http.StatusOK, book)
 }
 
-func Insert(c *gin.Context) {
+func (ctrl *Controller) Insert(c *gin.Context) {
 	var book dtos.BookDTO
 	if err := c.BindJSON(&book); err != nil {
 		apiErr := e.NewBadRequestApiError(err.Error())
@@ -35,7 +35,7 @@ func Insert(c *gin.Context) {
 		return
 	}
 
-	book, apiErr := bookService.Insert(book)
+	book, apiErr := ctrl.service.Insert(book)
 	if apiErr != nil {
 		c.JSON(apiErr.Status(), apiErr)
 		return

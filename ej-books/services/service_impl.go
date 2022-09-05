@@ -9,20 +9,20 @@ import (
 )
 
 type ServiceImpl struct {
-	cache     *repositories.RepositoryCache
-	memcached *repositories.RepositoryMemcached
-	mongo     *repositories.RepositoryMongo
+	localCache repositories.Repository
+	distCache  repositories.Repository
+	db         repositories.Repository
 }
 
 func NewServiceImpl(
-	cache *repositories.RepositoryCache,
-	memcached *repositories.RepositoryMemcached,
-	mongo *repositories.RepositoryMongo,
+	localCache repositories.Repository,
+	distCache repositories.Repository,
+	db repositories.Repository,
 ) *ServiceImpl {
 	return &ServiceImpl{
-		cache:     cache,
-		memcached: memcached,
-		mongo:     mongo,
+		localCache: localCache,
+		distCache:  distCache,
+		db:         db,
 	}
 }
 
@@ -31,27 +31,20 @@ func (serv *ServiceImpl) Get(id string) (dtos.BookDTO, e.ApiError) {
 	var apiErr e.ApiError
 	var source string
 
-	// try to find it in cache
-	book, apiErr = serv.cache.Get(id)
+	// try to find it in localCache
+	book, apiErr = serv.localCache.Get(id)
 	if apiErr != nil {
 		if apiErr.Status() != http.StatusNotFound {
 			return dtos.BookDTO{}, apiErr
 		}
-		defer func() {
-			if apiErr != nil {
-				if _, apiErr := serv.cache.Insert(book); apiErr != nil {
-					fmt.Println(fmt.Sprintf("Error trying to save book in cache %v", apiErr))
-				}
-			}
-		}()
-		// try to find it in memcached
-		book, apiErr = serv.memcached.Get(id)
+		// try to find it in distCache
+		book, apiErr = serv.distCache.Get(id)
 		if apiErr != nil {
 			if apiErr.Status() != http.StatusNotFound {
 				return dtos.BookDTO{}, apiErr
 			}
-			// try to find it in mongo
-			book, apiErr = serv.mongo.Get(id)
+			// try to find it in db
+			book, apiErr = serv.db.Get(id)
 			if apiErr != nil {
 				if apiErr.Status() != http.StatusNotFound {
 					return dtos.BookDTO{}, apiErr
@@ -61,26 +54,26 @@ func (serv *ServiceImpl) Get(id string) (dtos.BookDTO, e.ApiError) {
 					return dtos.BookDTO{}, apiErr
 				}
 			} else {
-				source = "mongo"
+				source = "db"
 				defer func() {
-					if _, apiErr := serv.memcached.Insert(book); apiErr != nil {
-						fmt.Println(fmt.Sprintf("Error trying to save book in memcached %v", apiErr))
+					if _, apiErr := serv.distCache.Insert(book); apiErr != nil {
+						fmt.Println(fmt.Sprintf("Error trying to save book in distCache %v", apiErr))
 					}
-					if _, apiErr := serv.cache.Insert(book); apiErr != nil {
-						fmt.Println(fmt.Sprintf("Error trying to save book in cache %v", apiErr))
+					if _, apiErr := serv.localCache.Insert(book); apiErr != nil {
+						fmt.Println(fmt.Sprintf("Error trying to save book in localCache %v", apiErr))
 					}
 				}()
 			}
 		} else {
-			source = "memcached"
+			source = "distCache"
 			defer func() {
-				if _, apiErr := serv.cache.Insert(book); apiErr != nil {
-					fmt.Println(fmt.Sprintf("Error trying to save book in cache %v", apiErr))
+				if _, apiErr := serv.localCache.Insert(book); apiErr != nil {
+					fmt.Println(fmt.Sprintf("Error trying to save book in localCache %v", apiErr))
 				}
 			}()
 		}
 	} else {
-		source = "cache"
+		source = "localCache"
 	}
 
 	fmt.Println(fmt.Sprintf("Obtained book from %s!", source))
@@ -88,26 +81,26 @@ func (serv *ServiceImpl) Get(id string) (dtos.BookDTO, e.ApiError) {
 }
 
 func (serv *ServiceImpl) Insert(book dtos.BookDTO) (dtos.BookDTO, e.ApiError) {
-	result, apiErr := serv.mongo.Insert(book)
+	result, apiErr := serv.db.Insert(book)
 	if apiErr != nil {
-		fmt.Println(fmt.Sprintf("Error inserting book in mongo: %v", apiErr))
+		fmt.Println(fmt.Sprintf("Error inserting book in db: %v", apiErr))
 		return dtos.BookDTO{}, apiErr
 	}
-	fmt.Println(fmt.Sprintf("Inserted book in mongo: %v", result))
+	fmt.Println(fmt.Sprintf("Inserted book in db: %v", result))
 
-	_, apiErr = serv.memcached.Insert(result)
+	_, apiErr = serv.distCache.Insert(result)
 	if apiErr != nil {
-		fmt.Println(fmt.Sprintf("Error inserting book in memcached: %v", apiErr))
+		fmt.Println(fmt.Sprintf("Error inserting book in distCache: %v", apiErr))
 		return result, nil
 	}
-	fmt.Println(fmt.Sprintf("Inserted book in memcached: %v", result))
+	fmt.Println(fmt.Sprintf("Inserted book in distCache: %v", result))
 
-	_, apiErr = serv.cache.Insert(result)
+	_, apiErr = serv.localCache.Insert(result)
 	if apiErr != nil {
-		fmt.Println(fmt.Sprintf("Error inserting book in cache: %v", apiErr))
+		fmt.Println(fmt.Sprintf("Error inserting book in localCache: %v", apiErr))
 		return result, nil
 	}
-	fmt.Println(fmt.Sprintf("Inserted book in cache: %v", result))
+	fmt.Println(fmt.Sprintf("Inserted book in localCache: %v", result))
 
 	return result, nil
 }

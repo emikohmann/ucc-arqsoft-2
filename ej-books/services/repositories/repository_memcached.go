@@ -12,7 +12,7 @@ type RepositoryMemcached struct {
 	Client *memcache.Client
 }
 
-func NewRepositoryMemcached(host string, port int) *RepositoryMemcached {
+func NewMemcached(host string, port int) *RepositoryMemcached {
 	client := memcache.New(fmt.Sprintf("%s:%d", host, port))
 	fmt.Println("[Memcached] Initialized connection")
 	return &RepositoryMemcached{
