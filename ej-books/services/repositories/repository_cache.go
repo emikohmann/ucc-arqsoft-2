@@ -7,26 +7,26 @@ import (
 
 type RepositoryCache struct{}
 
-func NewRepositoryCache() RepositoryCache {
-	return RepositoryCache{}
+func NewRepositoryCache() *RepositoryCache {
+	return &RepositoryCache{}
 }
 
-func (RepositoryCache) Get(id string) (dtos.BookDto, errors.ApiError) {
+func (repo *RepositoryCache) Get(id string) (dtos.BookDto, errors.ApiError) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (RepositoryCache) Insert(dto dtos.BookDto) errors.ApiError {
+func (repo *RepositoryCache) Insert(dto dtos.BookDto) errors.ApiError {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (RepositoryCache) Update(dto dtos.BookDto) errors.ApiError {
+func (repo *RepositoryCache) Update(dto dtos.BookDto) errors.ApiError {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (RepositoryCache) Delete(id string) errors.ApiError {
+func (repo *RepositoryCache) Delete(id string) errors.ApiError {
 	//TODO implement me
 	panic("implement me")
 }

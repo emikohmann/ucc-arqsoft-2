@@ -1,30 +1,19 @@
 package main
 
 import (
-	"github.com/emikohmann/ucc-arqsoft-2/ej-books/router"
-	"github.com/emikohmann/ucc-arqsoft-2/ej-books/utils/cache"
-	"github.com/emikohmann/ucc-arqsoft-2/ej-books/utils/db"
-	"github.com/gin-gonic/gin"
-
 	"fmt"
+	"github.com/emikohmann/ucc-arqsoft-2/ej-books/router"
+	"github.com/gin-gonic/gin"
 )
 
 var (
-	gin_router *gin.Engine
+	ginRouter *gin.Engine
 )
 
 func main() {
-	gin_router = gin.Default()
-	router.MapUrls(gin_router)
-	cache.Init_cache()
-	err := db.Init_db()
-	defer db.Disconect_db()
-
-	if err != nil {
-		fmt.Println("Cannot init db")
-		fmt.Println(err)
-		return
+	ginRouter = gin.Default()
+	router.MapUrls(ginRouter)
+	if err := ginRouter.Run(":8090"); err != nil {
+		fmt.Println(fmt.Sprintf("Error running application: %v", err))
 	}
-	fmt.Println("Starting server")
-	gin_router.Run(":8090")
 }

@@ -10,15 +10,26 @@ import (
 )
 
 var (
-	serv = service.NewServiceImpl(
+	bookService = service.NewServiceImpl(
+
 		repositories.NewRepositoryCache(),
-		repositories.NewRepositoryMemcached(),
-		repositories.NewRepositoryMongo(),
+
+		repositories.NewRepositoryMemcached(
+			"localhost",
+			11211),
+
+		repositories.NewRepositoryMongo(
+			"root",
+			"root",
+			"localhost",
+			27017,
+			"admin",
+			"SCRAM-SHA-256"),
 	)
 )
 
 func Get(c *gin.Context) {
-	book, apiErr := serv.Get(c.Param("id"))
+	book, apiErr := bookService.Get(c.Param("id"))
 	if apiErr != nil {
 		c.JSON(apiErr.Status(), apiErr)
 		return
@@ -34,10 +45,11 @@ func Insert(c *gin.Context) {
 		return
 	}
 
-	book, apiErr := serv.Insert(book)
+	book, apiErr := bookService.Insert(book)
 	if apiErr != nil {
 		c.JSON(apiErr.Status(), apiErr)
 		return
 	}
+
 	c.JSON(http.StatusCreated, book)
 }
