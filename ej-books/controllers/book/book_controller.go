@@ -38,7 +38,7 @@ func Get(c *gin.Context) {
 }
 
 func Insert(c *gin.Context) {
-	var book dtos.BookDto
+	var book dtos.BookDTO
 	if err := c.BindJSON(&book); err != nil {
 		apiErr := errors.NewBadRequestApiError(err.Error())
 		c.JSON(apiErr.Status(), apiErr)

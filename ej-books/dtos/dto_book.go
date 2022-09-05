@@ -1,6 +1,6 @@
 package dtos
 
-type BookDto struct {
+type BookDTO struct {
 	Name string `json:"name"`
 	Id   string `json:"id"`
 }

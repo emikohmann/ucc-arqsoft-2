@@ -6,6 +6,6 @@ import (
 )
 
 type Service interface {
-	Get(id string) (dtos.BookDto, e.ApiError)
-	Insert(book dtos.BookDto) (dtos.BookDto, e.ApiError)
+	Get(id string) (dtos.BookDTO, e.ApiError)
+	Insert(book dtos.BookDTO) (dtos.BookDTO, e.ApiError)
 }

@@ -6,8 +6,8 @@ import (
 )
 
 type Repository interface {
-	Get(id string) (dtos.BookDto, errors.ApiError)
-	Insert(dto dtos.BookDto) errors.ApiError
-	Update(dto dtos.BookDto) errors.ApiError
+	Get(id string) (dtos.BookDTO, errors.ApiError)
+	Insert(dto dtos.BookDTO) errors.ApiError
+	Update(dto dtos.BookDTO) errors.ApiError
 	Delete(id string) errors.ApiError
 }

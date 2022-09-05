@@ -44,18 +44,18 @@ func NewRepositoryMongo(
 	}
 }
 
-func (repo *RepositoryMongo) Get(id string) (dtos.BookDto, errors.ApiError) {
+func (repo *RepositoryMongo) Get(id string) (dtos.BookDTO, errors.ApiError) {
 	//TODO implement me
 	panic("implement me")
 
 }
 
-func (repo *RepositoryMongo) Insert(dto dtos.BookDto) errors.ApiError {
+func (repo *RepositoryMongo) Insert(dto dtos.BookDTO) errors.ApiError {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (repo *RepositoryMongo) Update(dto dtos.BookDto) errors.ApiError {
+func (repo *RepositoryMongo) Update(dto dtos.BookDTO) errors.ApiError {
 	//TODO implement me
 	panic("implement me")
 }

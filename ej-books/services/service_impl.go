@@ -26,24 +26,24 @@ func NewServiceImpl(
 	}
 }
 
-func (serv *ServiceImpl) Get(id string) (dtos.BookDto, e.ApiError) {
-	var book dtos.BookDto
+func (serv *ServiceImpl) Get(id string) (dtos.BookDTO, e.ApiError) {
+	var book dtos.BookDTO
 	var apiErr e.ApiError
 	var source string
 
 	book, apiErr = serv.cache.Get(id)
 	if apiErr != nil {
 		if apiErr.Status() != http.StatusNotFound {
-			return dtos.BookDto{}, apiErr
+			return dtos.BookDTO{}, apiErr
 		}
 		book, apiErr = serv.memcached.Get(id)
 		if apiErr != nil {
 			if apiErr.Status() != http.StatusNotFound {
-				return dtos.BookDto{}, apiErr
+				return dtos.BookDTO{}, apiErr
 			}
 			book, apiErr = serv.mongo.Get(id)
 			if apiErr != nil {
-				return dtos.BookDto{}, apiErr
+				return dtos.BookDTO{}, apiErr
 			} else {
 				source = "mongo"
 			}
@@ -57,7 +57,7 @@ func (serv *ServiceImpl) Get(id string) (dtos.BookDto, e.ApiError) {
 	return book, nil
 }
 
-func (serv *ServiceImpl) Insert(book dtos.BookDto) (dtos.BookDto, e.ApiError) {
+func (serv *ServiceImpl) Insert(book dtos.BookDTO) (dtos.BookDTO, e.ApiError) {
 	//TODO implement me
 	panic("implement me")
 }

@@ -19,21 +19,21 @@ func NewRepositoryMemcached(host string, port int) *RepositoryMemcached {
 	}
 }
 
-func (repo *RepositoryMemcached) Get(id string) (dtos.BookDto, errors.ApiError) {
+func (repo *RepositoryMemcached) Get(id string) (dtos.BookDTO, errors.ApiError) {
 	item, err := repo.Client.Get(id)
 	if err != nil {
-		return dtos.BookDto{}, errors.NewInternalServerApiError(err.Error(), err)
+		return dtos.BookDTO{}, errors.NewInternalServerApiError(err.Error(), err)
 	}
 
-	var bookDTO dtos.BookDto
+	var bookDTO dtos.BookDTO
 	if err := json.Unmarshal(item.Value, &bookDTO); err != nil {
-		return dtos.BookDto{}, errors.NewInternalServerApiError(err.Error(), err)
+		return dtos.BookDTO{}, errors.NewInternalServerApiError(err.Error(), err)
 	}
 
 	return bookDTO, nil
 }
 
-func (repo *RepositoryMemcached) Insert(book dtos.BookDto) errors.ApiError {
+func (repo *RepositoryMemcached) Insert(book dtos.BookDTO) errors.ApiError {
 	bytes, err := json.Marshal(book)
 	if err != nil {
 		return errors.NewBadRequestApiError(err.Error())
@@ -49,7 +49,7 @@ func (repo *RepositoryMemcached) Insert(book dtos.BookDto) errors.ApiError {
 	return nil
 }
 
-func (repo *RepositoryMemcached) Update(book dtos.BookDto) errors.ApiError {
+func (repo *RepositoryMemcached) Update(book dtos.BookDTO) errors.ApiError {
 	//TODO implement me
 	panic("implement me")
 }
